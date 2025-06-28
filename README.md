@@ -19,11 +19,11 @@ Output Devices:
 - [x] Motor controlled with H Bridge
 - [x] OLED Display
 - [x] 7 Segment / Bargraph controlled with 595 shift registers
-- [] RFID Reader
+- [ ] RFID Reader
 
 Input Devices:
 - [x] Rotary Encoders
-- [] Sliding potentiometers
+- [ ] Sliding potentiometers
 
 Peripherals that will be added support:
 
@@ -186,8 +186,61 @@ motor->stop();
 
 The library also supports a `ShiftRegisterDevice`, which is a part of a `ShiftRegisterChain`. These devices function by leveraging the 74HC595 shift registers to control multiple outputs with fewer pins.
 
+Every device connected to the chain can be controlled individually, the library handles the bit-communication and ordering.
+
 Currently implemented devices are the 7-Segment Display (common anode) and a LED Bargraph (or a strip of LEDs). The wiring diagram of the 7-Segment Display is as follows:
 
+**will be added**
+
+A simple combination of a 7-Segment LED display and a LED Bargraph can be controlled in the following way:
+
+```cpp
+#include <Arduino.h>
+#include "PeripheralFactory.h"
+
+#define LATCH_PIN D1
+#define DATA_PIN  D2
+#define CLOCK_PIN D0
+#define NUM_DIGITS 8
+
+PeripheralFactory factory;
+ShiftRegisterChain* shiftChain = factory.createShiftRegisterChain(LATCH_PIN, DATA_PIN, CLOCK_PIN);
+
+//devices are addd in the reverse order, due to the chaining of the shift registers (physically the LED display is first, then the bargraph)
+//connect the Q_H' of the second shift register used for the LED display to the SER pin of the first shift register used for the bargraph
+Bargraph* bargraph1 = factory.createBargraph(shiftChain, 10);
+SegmentDisplay* display1 = factory.createSegmentDisplay(shiftChain, 8);
+
+unsigned long lastUpdateTime = 0;
+
+void setup() {
+	Serial.begin(115200);
+	
+	factory.init();
+}
+
+
+void loop() {
+	factory.update();
+	
+	if(millis() % 100 == 0) {
+		display1->displayNumber(millis());
+	}
+	
+	if(millis() % 1000 == 0) {
+		static bool reversed = false;
+
+		bargraph1->setValue((millis() / 1000) % 11); // update bargraph based on millis (every of the 10 leds, 0-10 left by modulo)
+
+		//reverse the order after every 10 seconds
+		if ((millis() / 1000) % 11 == 0) {
+			reversed = !reversed;
+			bargraph1->setReversed(reversed);
+			Serial.println(reversed ? F("Bargraph reversed") : F("Bargraph normal"));
+		}
+	}
+}
+```
 
 ## Contributing
 
