@@ -1,7 +1,7 @@
 #ifndef SEGMENT_H
 #define SEGMENT_H
 
-#include <LedControl.h>
+#include <LedController.hpp>
 #include "Peripheral.h"
 
 class Max7219Segment : public Peripheral {
@@ -15,7 +15,7 @@ public:
 
     // Set a character on a specific digit across the entire chain of displays.
     // overallDigitIndex: 0 for the first digit of the first display, 8 for the first digit of the second display, etc.
-    // character: The character to display (LedControl handles common ones like 0-9, A-F, H,E,L,P,space,dash).
+    // character: The character to display (LedController handles common ones like 0-9, A-F, H,E,L,P,space,dash).
     // decimalPoint: true to light up the decimal point for this digit.
     void setChar(int overallDigitIndex, char character, bool decimalPoint);
 
@@ -37,11 +37,11 @@ public:
     // Other values (negative, too large) will display "----".
     void displayPower(int logicalDisplayNum, float value);
 
-    // Advanced: Directly access LedControl instance if needed for features not wrapped
-    LedControl& getLedControlInstance();
+    // Advanced: Directly access LedController instance if needed for features not wrapped
+    LedController& getLedControllerInstance();
 
 private:
-    LedControl lc;
+    LedController lc;
     int totalNumDevices; // Stores the total number of MAX7219 devices in the chain
     int totalDigits;     // Total number of digits available (totalNumDevices * 8)
 };

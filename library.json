@@ -28,6 +28,11 @@
   },
   "dependencies": [
     {
+      "name": "LedController",
+      "owner": "noah1510",
+      "version": "^2"
+    },
+    {
       "name": "MFRC522v2",
       "version": "*",
       "repository": "https://github.com/OSSLibraries/Arduino_MFRC522v2.git"

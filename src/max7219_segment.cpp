@@ -68,7 +68,7 @@ void Max7219Segment::printNumber(long number) {
     printString(buf);
 }
 
-LedControl& Max7219Segment::getLedControlInstance() {
+LedController& Max7219Segment::getLedControllerInstance() {
     return lc;
 }
 
