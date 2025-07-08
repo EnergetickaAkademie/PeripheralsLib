@@ -23,6 +23,9 @@ Output Devices:
 
 Input Devices:
 - [x] Rotary Encoders
+- [ ] Buttons
+- [ ] Buttons with LED feedback
+- [ ] RFID Reader
 - [ ] Sliding potentiometers
 
 Peripherals that will be added support:
@@ -110,7 +113,7 @@ led->stopBlink();
 led->setBrightness(255);
 ```
 
-### Seven-Segment Display Using the MAX7219 Driver
+### ~~Seven-Segment Display Using the MAX7219 Driver~~ - Deprecated due to used library support, please use the `ShiftRegisterChain` method instead.
 ```cpp
 #define MAX7219_DATA_PIN D1
 #define MAX7219_CLK_PIN  D2
