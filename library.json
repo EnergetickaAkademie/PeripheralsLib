@@ -28,11 +28,6 @@
   },
   "dependencies": [
     {
-      "name": "LedControl",
-      "owner": "wayoda",
-      "version": "*"
-    },
-    {
       "name": "MFRC522v2",
       "version": "*",
       "repository": "https://github.com/OSSLibraries/Arduino_MFRC522v2.git"
