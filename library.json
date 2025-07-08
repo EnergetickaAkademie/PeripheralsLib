@@ -30,12 +30,7 @@
     {
       "name": "LedController",
       "owner": "noah1510",
-      "version": "^2"
-    },
-    {
-      "name": "MFRC522v2",
-      "version": "*",
-      "repository": "https://github.com/OSSLibraries/Arduino_MFRC522v2.git"
+      "version": "^2.0.0"
     },
     {
       "name": "Adafruit GFX Library",
@@ -54,13 +49,13 @@
     },
     {
       "name": "ESPRotary",
-      "version": "*",
-      "repository": "https://github.com/LennartHennigs/ESPRotary.git"
+      "owner": "LennartHennigs",
+      "version": "*"
     },
     {
       "name": "Button2",
-      "version": "*",
-      "repository": "https://github.com/LennartHennigs/Button2.git"
+      "owner": "LennartHennigs",
+      "version": "*"
     },
     {
       "name": "LiquidCrystal_I2C",
