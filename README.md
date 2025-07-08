@@ -19,7 +19,6 @@ Output Devices:
 - [x] Motor controlled with H Bridge
 - [x] OLED Display
 - [x] 7 Segment / Bargraph controlled with 595 shift registers
-- [ ] RFID Reader
 
 Input Devices:
 - [x] Rotary Encoders
@@ -34,8 +33,7 @@ Peripherals that will be added support:
 
 ### Prerequisites
 
-This library is designed to be used with the PlatformIO ecosystem. You will need to have PlatformIO Core installed and the following libraries available:
-- wayoda/LedControl
+This library is designed to be used with the PlatformIO ecosystem. This library depends on the following libraries (will be installed automatically):
 - https://github.com/OSSLibraries/Arduino_MFRC522v2.git
 - adafruit/Adafruit GFX Library @ ^1.11.9
 - adafruit/Adafruit SSD1306 @ ^2.5.9
@@ -64,8 +62,6 @@ The standard framework for using this library is as follows:
 
 ```cpp
 #include <Arduino.h>
-#include <PeripheralFactory.h>
-
 #include <PeripheralFactory.h>
 
 PeripheralFactory factory;
@@ -191,15 +187,15 @@ The library also supports a `ShiftRegisterDevice`, which is a part of a `ShiftRe
 
 Every device connected to the chain can be controlled individually, the library handles the bit-communication and ordering.
 
-Currently implemented devices are the 7-Segment DisplSay (common anode) and a LED Bargraph (or a strip of LEDs). The wiring diagram of a single 7-Segment Display (common cathode, 4 digits) is as follows:
+Currently implemented devices are the 7-Segment DisplSay (common cathode) and a LED Bargraph (or a strip of LEDs). The wiring diagram of a single 7-Segment Display (common cathode, 4 digits) is as follows:
 
 ![wiring_single](./docs/SCH_Schematic1_1-one_display_2025-06-29.svg)
 
 Where, the first register controls the individual segments of the display, and the second register selects which digit to turn on. To light up all segments of the,
 lets say second digit, we would need to send:
 ```haskell
-0b11111101 - select the second digit (common cathode)
-0b01111111 - turn all 7 segments, without the decimal point
+0b11111101 - select the second digit (common cathode, pulling the cathode pin low)
+0b01111111 - turn all 7 segments, without the decimal point (pulling all segment pins high)
 ```
 This is being handled by the library on its own.
 
@@ -227,7 +223,7 @@ A simple combination of a 7-Segment LED display and a LED Bargraph can be contro
 PeripheralFactory factory;
 ShiftRegisterChain* shiftChain = factory.createShiftRegisterChain(LATCH_PIN, DATA_PIN, CLOCK_PIN);
 
-//devices are addd in the reverse order, due to the chaining of the shift registers (physically the LED display is first, then the bargraph)
+//devices are added in the reverse order, due to the chaining of the shift registers (physically the LED display is first, then the bargraph)
 //connect the Q_H' of the second shift register used for the LED display to the SER pin of the first shift register used for the bargraph
 Bargraph* bargraph1 = factory.createBargraph(shiftChain, 10);
 SegmentDisplay* display1 = factory.createSegmentDisplay(shiftChain, 8);
