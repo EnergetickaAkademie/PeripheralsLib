@@ -1,7 +1,7 @@
 #ifndef SEGMENT_H
 #define SEGMENT_H
 
-#include <LedController.h>
+#include <LedController.hpp>
 #include "Peripheral.h"
 
 class Max7219Segment : public Peripheral {
