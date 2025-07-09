@@ -88,6 +88,24 @@ LiquidCrystal* PeripheralFactory::createLiquidCrystal(uint8_t address, uint8_t c
     return lcd;
 }
 
+Button* PeripheralFactory::createButton(uint8_t pin) {
+    if (_peripheralCount < MAX_PERIPHERALS) {
+        Button* button = new Button(pin);
+        _peripherals[_peripheralCount++] = button;
+        return button;
+    }
+    return nullptr;
+}
+
+LEDButton* PeripheralFactory::createLEDButton(uint8_t buttonPin, uint8_t ledPin) {
+    if (_peripheralCount < MAX_PERIPHERALS) {
+        LEDButton* ledButton = new LEDButton(buttonPin, ledPin);
+        _peripherals[_peripheralCount++] = ledButton;
+        return ledButton;
+    }
+    return nullptr;
+}
+
 void PeripheralFactory::init() {
 	for (int i = 0; i < _peripheralCount; i++) {
 		if (_peripherals[i] != nullptr) {

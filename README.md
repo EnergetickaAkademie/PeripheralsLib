@@ -22,8 +22,8 @@ Output Devices:
 
 Input Devices:
 - [x] Rotary Encoders
-- [ ] Buttons
-- [ ] Buttons with LED feedback
+- [x] Buttons
+- [x] Buttons with LED feedback
 - [ ] RFID Reader
 - [ ] Sliding potentiometers
 
@@ -107,6 +107,65 @@ led->startBlink(500); //blinking time in ms
 led->stopBlink();
 
 led->setBrightness(255);
+```
+
+### LED Button
+A button that reacts to presses, releases and toggles. It can show its state with its integrated LED. We can add `UpdateFunctions` to call certain functions,
+without busy checking in the main loop.
+
+Here is an example of two buttons, switiching a state of external LEDs, while one button maximum can be pressed at a time.
+
+```cpp
+#include <Arduino.h>
+#include "PeripheralFactory.h"
+
+PeripheralFactory factory;
+
+LEDButton* btnG = nullptr;
+LEDButton* btnR = nullptr;
+
+LED* led1 = nullptr;
+LED* led2 = nullptr;
+
+void RedOff() {
+	btnR->setToggleState(false); //togle the other button off
+}
+
+void GreenOff() {
+	btnG->setToggleState(false); //toggle the other button off
+}
+
+void UpdateLEDState() { //update the LEDs when a button has been toggled (no need to check in the loop)
+	led1->setState(btnR->getToggleState());
+	led2->setState(btnG->getToggleState());
+}
+
+void setup(){
+	btnR = factory.createLEDButton(5, 4);
+	btnG = factory.createLEDButton(7, 6);
+
+	led1 = factory.createLed(15);
+	led2 = factory.createLed(16);
+
+	if (btnR) {
+		btnR->setMode(LEDButtonMode::TOGGLE); //add a toggle mode, in which the button stays lit when pressed, can be set to TOGGLE, FOLLOW or MANUAL (default)
+		btnR->addUpdateFunction(GreenOff, UpdateFunction::TOGGLE); //a function that is called when a button is toggled, can be TOGGLE, PRESS or RELEASE
+		btnR->addUpdateFunction(UpdateLEDState, UpdateFunction::TOGGLE);
+	}
+
+	if (btnG) {
+		btnG->setMode(LEDButtonMode::TOGGLE);
+		btnG->addUpdateFunction(RedOff, UpdateFunction::TOGGLE);
+		btnG->addUpdateFunction(UpdateLEDState, UpdateFunction::TOGGLE);
+	}
+
+	factory.init();
+}
+
+
+void loop() {
+	factory.update();
+}
 ```
 
 ### ~~Seven-Segment Display Using the MAX7219 Driver~~ - Deprecated due to used library support, please use the `ShiftRegisterChain` method instead.

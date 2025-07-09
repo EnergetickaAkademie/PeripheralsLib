@@ -2,7 +2,7 @@
 #define PERIPHERAL_FACTORY_H
 
 #include "Peripheral.h"
-
+// Include all concrete peripheral headers so the factory can create them.
 #include "led.h"
 #include "motor.h"
 #include "oled.h"
@@ -13,6 +13,8 @@
 #include "segment_display.h"
 #include "bargraph.h"
 #include "liquid_crystal.h"
+#include "button.h"
+#include "ledbutton.h"
 
 #define MAX_PERIPHERALS 100 
 
@@ -37,6 +39,8 @@ public:
     Buzzer* createBuzzer(uint8_t pin);
     ShiftRegisterChain* createShiftRegisterChain(uint8_t latchPin, uint8_t dataPin, uint8_t clockPin);
     LiquidCrystal* createLiquidCrystal(uint8_t address, uint8_t cols, uint8_t rows);
+    Button* createButton(uint8_t pin);
+    LEDButton* createLEDButton(uint8_t buttonPin, uint8_t ledPin);
 
     // --- Factory Methods for Shift Register Devices ---
     Bargraph* createBargraph(ShiftRegisterChain* chain, uint8_t numLeds = 16);
