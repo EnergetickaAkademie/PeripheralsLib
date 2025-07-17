@@ -10,6 +10,9 @@
  * It handles number-to-segment conversion and multiplexing. It does not
  * directly control hardware pins; instead, it provides its data to a
  * ShiftRegisterChain controller.
+ * 
+ * `SegmentDisplay segmentDisplay(uint8_t numDigits);`
+ * @param numDigits The number of digits on the display module (e.g., 4 or 8).
  */
 class SegmentDisplay : public ShiftRegisterDevice {
 public:
@@ -17,7 +20,9 @@ public:
 	 * @brief Construct a new Segment Display object.
 	 * @param numDigits The number of digits on the display module (e.g., 4 or 8).
 	 */
-	SegmentDisplay(uint8_t numDigits = 4);
+	SegmentDisplay(NumDigits numDigits = {4});
+	SegmentDisplay(uint8_t numDigits) : SegmentDisplay(NumDigits{numDigits}) {}
+
 	~SegmentDisplay();
 
 	/**
@@ -27,6 +32,9 @@ public:
 	void displayNumber(long number);
 	void displayString(const char* str);
 	void clear();
+
+	// --- Implementations for the Peripheral interface ---
+	void init();
 
 	// --- Implementations for the ShiftRegisterDevice interface ---
 

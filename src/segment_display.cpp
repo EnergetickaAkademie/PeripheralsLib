@@ -22,8 +22,8 @@ const byte SegmentDisplay::digitSelect[8] = {
 	(byte)~(1 << 4), (byte)~(1 << 5), (byte)~(1 << 6), (byte)~(1 << 7)
 };
 
-SegmentDisplay::SegmentDisplay(uint8_t numDigits) 
-	: _numDigits(numDigits), _currentDigit(0) {
+SegmentDisplay::SegmentDisplay(NumDigits numDigits) 
+	: _numDigits(numDigits.val), _currentDigit(0) {
 	_digit_values = new byte[_numDigits];
 	_dp_values = new bool[_numDigits];
 	clear(); // Initialize display to be blank
@@ -66,6 +66,14 @@ void SegmentDisplay::displayString(const char* str) {
 		}
 		// Other characters are ignored
 	}
+}
+
+void SegmentDisplay::init() {
+	// SegmentDisplay initialization: clear display and reset state
+	clear();
+	_currentDigit = 0;
+	_shiftData[0] = 0x00;
+	_shiftData[1] = 0x00;
 }
 
 const byte* SegmentDisplay::getShiftData() const {
