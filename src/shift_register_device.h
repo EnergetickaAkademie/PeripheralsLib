@@ -2,16 +2,9 @@
 #define SHIFT_REGISTER_DEVICE_H
 
 #include <Arduino.h>
-#include "Peripheral.h"
 
-/**
- * @brief Abstract base class for devices controlled by shift registers.
- * 
- * This class provides a common interface for devices that can be controlled
- * via shift registers, such as 7-segment displays, bargraphs, etc.
- * It allows the PeripheralFactory to manage these devices uniformly.
- */
-class ShiftRegisterDevice : public Peripheral {
+// Abstract base class for any device connected to a ShiftRegisterChain.
+class ShiftRegisterDevice {
 public:
     virtual ~ShiftRegisterDevice() {}
 
