@@ -49,6 +49,8 @@ public:
      */
     void update() override;
 
+    void test();
+
 private:
     static const byte digitToSegment[12];
     static const byte digitSelect[8];
@@ -58,7 +60,7 @@ private:
     byte* _digit_values; // Stores the value (0-9) for each digit position
     bool* _dp_values;    // Stores the decimal point state for each digit
 
-    byte _shiftData[2]; 
+    byte _shiftData[2];
 };
 
 #endif // SEGMENT_DISPLAY_H

@@ -16,6 +16,7 @@ public:
 
     // For internal logic, like multiplexing a 7-segment display.
     virtual void update() {} 
+
 };
 
 #endif // SHIFT_REGISTER_DEVICE_H
