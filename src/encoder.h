@@ -21,10 +21,9 @@ private:
 	volatile int16_t _currentPosition;
 	volatile bool _buttonPressed;
 
-	// Static members to route the C-style callback to our C++ object instance
-	static Encoder* _instance;
-	static void rotation_callback(ESPRotary &r);
-	static void button_callback(Button2& b);
+	// Instance-specific callback handlers
+	void handleRotation(ESPRotary &r);
+	void handleButton(Button2& b);
 };
 
 #endif // ENCODER_H

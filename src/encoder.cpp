@@ -1,22 +1,26 @@
 #include "encoder.h"
 #include <Arduino.h>
 
-// Initialize the static instance pointer
-Encoder* Encoder::_instance = nullptr;
-
 Encoder::Encoder(uint8_t pinA, uint8_t pinB, uint8_t pinSW, int16_t minVal, int16_t maxVal, int16_t steps_per_click)
 	: _rotary(pinA, pinB, steps_per_click, minVal, maxVal),
 	  _button(pinSW),
 	  _currentPosition(minVal),
 	  _buttonPressed(false)
 {
-	_instance = this;
-
 	_rotary.resetPosition(_currentPosition);
-	_rotary.setChangedHandler(rotation_callback);
+	
+	// Use lambda functions to capture 'this' pointer for instance-specific callbacks
+	_rotary.setChangedHandler([this](ESPRotary &r) {
+		this->handleRotation(r);
+	});
+	
 	_button.begin(_button.getPin());
-	_button.setClickHandler(button_callback);
-	_button.setLongClickHandler(button_callback);
+	_button.setClickHandler([this](Button2& b) {
+		this->handleButton(b);
+	});
+	_button.setLongClickHandler([this](Button2& b) {
+		this->handleButton(b);
+	});
 
 	_rotary.enableSpeedup(true); 
 	_rotary.setSpeedupIncrement(5); 
@@ -28,16 +32,12 @@ void Encoder::update() {
 	_button.loop();
 }
 
-void IRAM_ATTR Encoder::rotation_callback(ESPRotary &r) {
-	if (_instance) {
-		_instance->_currentPosition = r.getPosition();
-	}
+void Encoder::handleRotation(ESPRotary &r) {
+	_currentPosition = r.getPosition();
 }
 
-void Encoder::button_callback(Button2& b) {
-	if (_instance) {
-		_instance->_buttonPressed = true;
-	}
+void Encoder::handleButton(Button2& b) {
+	_buttonPressed = true;
 }
 
 int16_t Encoder::getValue() {
