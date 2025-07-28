@@ -4,10 +4,12 @@
 #include "Peripheral.h"
 #include <ESPRotary.h>
 #include <Button2.h>
+#include <map>
 
 class Encoder : public Peripheral {
 public:
 	Encoder(uint8_t pinA, uint8_t pinB, uint8_t pinSW, int16_t minVal = 0, int16_t maxVal = 100, int16_t steps_per_click = 1);
+	~Encoder();
 	
 	void update() override;
 
@@ -21,9 +23,11 @@ private:
 	volatile int16_t _currentPosition;
 	volatile bool _buttonPressed;
 
-	// Instance-specific callback handlers
-	void handleRotation(ESPRotary &r);
-	void handleButton(Button2& b);
+	// Static members to route the C-style callback to our C++ object instance
+	static std::map<ESPRotary*, Encoder*> _rotary_map;
+	static std::map<Button2*, Encoder*> _button_map;
+	static void rotation_callback(ESPRotary &r);
+	static void button_callback(Button2& b);
 };
 
 #endif // ENCODER_H
