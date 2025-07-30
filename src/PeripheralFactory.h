@@ -53,6 +53,15 @@ public:
      */
     void update();
 
+    /**
+     * @brief Initializes all peripherals. Provided for backward compatibility.
+     *
+     * Currently this simply calls update() once for each registered peripheral
+     * so sketches that call `factory.init()` from older versions continue to
+     * compile and run without changes.
+     */
+    void init();
+
 private:
     void add(Peripheral* peripheral); // Private, used internally by `create` methods
 

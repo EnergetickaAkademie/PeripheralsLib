@@ -105,9 +105,17 @@ LiquidCrystal* PeripheralFactory::createLiquidCrystal(uint8_t address, uint8_t c
 }
 
 void PeripheralFactory::update() {
-	for (auto& peripheral : _peripherals) {
-		if (peripheral) {
-			peripheral->update();
-		}
-	}
+        for (auto& peripheral : _peripherals) {
+                if (peripheral) {
+                        peripheral->update();
+                }
+        }
+}
+
+void PeripheralFactory::init() {
+        // Call update once so that peripherals which require an initial update
+        // (for example to refresh displays or set initial states) get a chance
+        // to initialize.  Older examples expect this function to exist, so we
+        // keep it for backward compatibility.
+        update();
 }
