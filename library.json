@@ -43,8 +43,8 @@
       "version": "*"
     },
     {
-      "name": "ESP Rotary",
-      "owner": "LennartHennigs",
+      "name": "ai-esp32-rotary-encoder",
+      "owner": "igorantolic",
       "version": "*"
     },
     {
