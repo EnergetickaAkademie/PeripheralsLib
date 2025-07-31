@@ -1,67 +1,126 @@
 #include "encoder.h"
 #include <Arduino.h>
 
-// Initialize the static maps
-std::map<ESPRotary*, Encoder*> Encoder::_rotary_map;
-std::map<Button2*, Encoder*> Encoder::_button_map;
-
-Encoder::Encoder(uint8_t pinA, uint8_t pinB, uint8_t pinSW, int16_t minVal, int16_t maxVal, int16_t steps_per_click)
-	: _rotary(pinA, pinB, steps_per_click, minVal, maxVal),
-	  _button(pinSW),
-	  _currentPosition(minVal),
-	  _buttonPressed(false)
+Encoder::Encoder(uint8_t pinA, uint8_t pinB, uint8_t pinSW, int16_t minVal, int16_t maxVal, uint16_t speedup_ms, uint8_t speedup_multiplier)
+	: _rotary(pinA, pinB, pinSW) 
 {
-	_rotary_map[&_rotary] = this;
-	_button_map[&_button] = this;
+	// Set encoder type - assuming it has pull-ups (common for modules)
+	_rotary.setEncoderType(EncoderType::HAS_PULLUP);
+	
+	// Set boundaries using the correct method
+	_rotary.setBoundaries(minVal, maxVal, false); 
+	
+	// Set the knob callback to track the current value with speedup
+	_rotary.onTurned([this](long value) { 
+		static int lastDirection = 0;
+		unsigned long currentTime = millis();
+		
+		// Calculate the change from the last library value
+		long libDelta = value - _lastLibValue;
+		_lastLibValue = value;
 
-	_rotary.resetPosition(_currentPosition);
-	_rotary.setChangedHandler(rotation_callback);
-	_button.begin(_button.getPin());
-	_button.setClickHandler(button_callback);
-	_button.setLongClickHandler(button_callback);
+		if (libDelta == 0) return;
 
-	_rotary.enableSpeedup(true); 
-	_rotary.setSpeedupIncrement(5); 
-	_rotary.setSpeedupInterval(75); 
-}
+		int currentDirection = (libDelta > 0) ? 1 : -1;
+		int direction = _reversed ? -currentDirection : currentDirection;
 
-Encoder::~Encoder() {
-	_rotary_map.erase(&_rotary);
-	_button_map.erase(&_button);
-}
+		// Reset speedup if:
+		// 1. Direction changed, OR
+		// 2. We're near minimum and moving downward
+		bool nearMinimum = (_currentValue <= (_minVal + 5)); // 5 is arbitrary threshold
+		if ((lastDirection != 0 && currentDirection != lastDirection) || 
+			(nearMinimum && direction < 0)) {
+			_lastTurnTime = 0; // Completely reset speedup
+		}
+		lastDirection = currentDirection;
 
-void Encoder::update() {
-	_rotary.loop();
-	_button.loop();
-}
+		// Calculate step size - always 1 when near minimum
+		int stepSize = 1;
+		if (_speedupEnabled && _lastTurnTime > 0 && !nearMinimum) {
+			unsigned long timeDiff = currentTime - _lastTurnTime;
+			if (timeDiff < _speedupThreshold) {
+				stepSize = _speedupMultiplier;
+			}
+		}
 
-void Encoder::rotation_callback(ESPRotary &r) {
-	Encoder* instance = _rotary_map[&r];
-	if (instance) {
-		instance->_currentPosition = r.getPosition();
-	}
-}
+		// Apply change
+		int steps = abs(libDelta);
+		long valueChange = direction * stepSize * steps;
+		long newValue = _currentValue + valueChange;
+		
+		// Fixed boundary clamping with consistent types
+		if (newValue < _minVal) newValue = _minVal;
+		if (newValue > _maxVal) newValue = _maxVal;
+		
+		_currentValue = newValue;
+		_lastTurnTime = currentTime;
+	});
+	
+	// Set the button callback - it expects a function that takes unsigned long duration
+	_rotary.onPressed([this](unsigned long duration) { this->button_callback(); });
+	
+	// Initialize interrupts
+	_rotary.begin();
+	
+	// Store values for getUpperBound and initial state
+	_minVal = minVal;
+	_maxVal = maxVal;
+	_currentValue = minVal;
+	_lastLibValue = minVal;
 
-void Encoder::button_callback(Button2& b) {
-	Encoder* instance = _button_map[&b];
-	if (instance) {
-		instance->_buttonPressed = true;
+	if(speedup_ms > 0) {
+		this->enableSpeedup(true);
+		this->setSpeedupConfig(speedup_ms, speedup_multiplier);
 	}
 }
 
 int16_t Encoder::getValue() {
-	return _currentPosition;
+	return _currentValue;
 }
 
 void Encoder::setValue(int16_t value) {
-	_rotary.resetPosition(value);
-	_currentPosition = _rotary.getPosition();
+	_currentValue = value;
+	_lastLibValue = value;
 }
 
 bool Encoder::isButtonPressed() {
-	if (_buttonPressed) {
-		_buttonPressed = false;
+	if (_buttonWasPressed) {
+		_buttonWasPressed = false; // Reset the flag after it's been read
 		return true;
 	}
 	return false;
+}
+
+int16_t Encoder::getUpperBound() {
+	return _maxVal;
+}
+
+void Encoder::reverse() {
+	// Toggle the reverse flag - this affects how we interpret turns
+	_reversed = !_reversed;
+	// Note: The actual reversal logic is implemented in the onTurned callback
+}
+
+void Encoder::enable() {
+	// Enable the encoder interrupts
+	_rotary.begin();
+}
+
+void Encoder::disable() {
+	// Disable the encoder interrupts by calling end() if available
+	// Note: The ESP32RotaryEncoder library may not have an end() method
+	// In that case, we could set a flag to ignore callbacks
+}
+
+void Encoder::setSpeedupConfig(uint16_t threshold_ms, uint8_t multiplier) {
+	_speedupThreshold = threshold_ms;
+	_speedupMultiplier = multiplier;
+}
+
+void Encoder::enableSpeedup(bool enabled) {
+	_speedupEnabled = enabled;
+}
+
+void Encoder::button_callback() {
+	_buttonWasPressed = true;
 }
