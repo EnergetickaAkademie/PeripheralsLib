@@ -42,11 +42,7 @@
       "owner": "adafruit",
       "version": "*"
     },
-    {
-      "name": "ai-esp32-rotary-encoder",
-      "owner": "igorantolic",
-      "version": "*"
-    },
+    "https://github.com/igorantolic/ai-esp32-rotary-encoder.git",
     {
       "name": "Button2",
       "owner": "LennartHennigs",
