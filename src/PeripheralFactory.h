@@ -18,6 +18,7 @@
 #include "button.h"
 #include "ledbutton.h"
 #include "periodic.h"
+#include "atomizer.h"
 
 /**
  * @brief Manages and creates hardware peripherals.
@@ -44,6 +45,7 @@ public:
     Button* createButton(uint8_t pin);
     LEDButton* createLEDButton(uint8_t buttonPin, uint8_t ledPin);
     Periodic* createPeriodic(unsigned long interval, std::function<void()> callback);
+    Atomizer* createAtomizer(uint8_t pin);
 
     // --- Factory Methods for Shift Register Devices ---
     Bargraph* createBargraph(ShiftRegisterChain* chain, uint8_t numLeds = 16);

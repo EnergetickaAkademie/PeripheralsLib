@@ -82,6 +82,12 @@ Periodic* PeripheralFactory::createPeriodic(unsigned long interval, std::functio
 	return periodic;
 }
 
+Atomizer* PeripheralFactory::createAtomizer(uint8_t pin) {
+	Atomizer* atomizer = new Atomizer(pin);
+	add(atomizer);
+	return atomizer;
+}
+
 // --- Shift Register Device Factory Methods ---
 
 Bargraph* PeripheralFactory::createBargraph(ShiftRegisterChain* chain, uint8_t numLeds) {
