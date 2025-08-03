@@ -26,8 +26,8 @@ LED* PeripheralFactory::createLed(int pin) {
 	return led;
 }
 
-Motor* PeripheralFactory::createMotor(int pinIA, int pinIB) {
-	Motor* motor = new Motor(pinIA, pinIB);
+Motor* PeripheralFactory::createMotor(int pinIA, int pinIB, int pwmFreq) {
+	Motor* motor = new Motor(pinIA, pinIB, pwmFreq);
 	add(motor);
 	return motor;
 }
