@@ -16,6 +16,8 @@ public:
 private:
 	uint8_t _pin;
 	bool _isBuzzing;
+	bool _pinState;
+	bool _stateChanged;
 	unsigned long _startTime;
 	unsigned long _duration;
 };

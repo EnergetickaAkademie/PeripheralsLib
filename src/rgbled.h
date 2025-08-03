@@ -15,6 +15,9 @@ private:
     Adafruit_NeoPixel _strip;
     uint8_t _brightness;
     uint8_t _r, _g, _b;
+    bool _colorChanged;
+    bool _brightnessChanged;
+    bool _showRequested;
 };
 
 #endif // RGBLED_H

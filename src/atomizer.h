@@ -46,7 +46,10 @@ private:
 
     uint8_t _pin;
     PulseState _state;
+    PulseState _pendingState;  // For handling requests during active sequence
     unsigned long _stateStartTime;
+    bool _pinState;            // Current pin state
+    bool _pinStateChanged;     // Flag to indicate pin state needs updating
     static const unsigned long PULSE_DURATION = 150; // 50ms for each state
 };
 

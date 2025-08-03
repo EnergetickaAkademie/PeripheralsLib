@@ -7,13 +7,23 @@
 class Motor : public Peripheral {
 public:
     Motor(int pinIA, int pinIB);
+    void update() override;
     void forward(int speed);
     void backward(int speed);
     void stop();
 
 private:
+    enum MotorState {
+        STOPPED,
+        FORWARD,
+        BACKWARD
+    };
+    
     int _pinIA;
     int _pinIB;
+    MotorState _state;
+    int _speed;
+    bool _stateChanged;
 };
 
 #endif // MOTOR_H

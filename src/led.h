@@ -25,7 +25,8 @@ private:
 	unsigned long _blinkInterval;
 	unsigned long _lastToggleTime;
 	
-	uint8_t _brightness; 
+	uint8_t _brightness;
+	bool _stateChanged;  // Flag to indicate pin state needs updating
 };
 
 #endif // LED_H

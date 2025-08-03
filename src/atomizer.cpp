@@ -1,12 +1,18 @@
 #include "atomizer.h"
 
 Atomizer::Atomizer(uint8_t pin) 
-    : _pin(pin), _state(IDLE), _stateStartTime(0) {
+    : _pin(pin), _state(IDLE), _pendingState(IDLE), _stateStartTime(0), _pinState(HIGH), _pinStateChanged(true) {
     pinMode(_pin, OUTPUT);
-    digitalWrite(_pin, HIGH); // Default state is HIGH (atomizer off)
+    // Don't set pin state here, let update() handle it
 }
 
 void Atomizer::update() {
+    // Handle pin state changes
+    if (_pinStateChanged) {
+        digitalWrite(_pin, _pinState);
+        _pinStateChanged = false;
+    }
+    
     if (_state == IDLE) {
         return; // Nothing to do when idle
     }
@@ -19,14 +25,16 @@ void Atomizer::update() {
         switch (_state) {
             case FIRST_HIGH:
                 // Transition from HIGH to LOW
-                digitalWrite(_pin, LOW);
+                _pinState = LOW;
+                _pinStateChanged = true;
                 _state = LOW_PULSE;
                 _stateStartTime = currentTime;
                 break;
                 
             case LOW_PULSE:
                 // Transition from LOW to HIGH
-                digitalWrite(_pin, HIGH);
+                _pinState = HIGH;
+                _pinStateChanged = true;
                 _state = FINAL_HIGH;
                 _stateStartTime = currentTime;
                 break;
@@ -45,12 +53,13 @@ void Atomizer::update() {
 
 void Atomizer::toggle() {
     if (_state == IDLE) {
-        // Start the pulse sequence
-        digitalWrite(_pin, HIGH);
+        // Start the pulse sequence - only set flags, no pin operations
+        _pinState = HIGH;
+        _pinStateChanged = true;
         _state = FIRST_HIGH;
         _stateStartTime = millis();
     }
-    // If already active, ignore the request
+    // If already active, ignore the request (or queue it if needed)
 }
 
 bool Atomizer::isActive() const {
