@@ -1,7 +1,7 @@
 #include "motor.h"
 
-Motor::Motor(int pinIA, int pinIB) 
-    : _pinIA(pinIA), _pinIB(pinIB), _state(STOPPED), _speed(0), _stateChanged(true) {
+Motor::Motor(int pinIA, int pinIB, int pwmFreq) 
+    : _pinIA(pinIA), _pinIB(pinIB), _pwmFreq(pwmFreq), _state(STOPPED), _speed(0), _stateChanged(true) {
 	pinMode(_pinIA, OUTPUT);
 	pinMode(_pinIB, OUTPUT);
 	// Don't set pin states here, let update() handle it
@@ -15,10 +15,12 @@ void Motor::update() {
     
     switch (_state) {
         case FORWARD:
+            analogWriteFreq(_pwmFreq);
             analogWrite(_pinIA, pwmSpeed);
             analogWrite(_pinIB, 0);
             break;
         case BACKWARD:
+            analogWriteFreq(_pwmFreq);
             analogWrite(_pinIA, 0);
             analogWrite(_pinIB, pwmSpeed);
             break;
