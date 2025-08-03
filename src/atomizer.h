@@ -47,7 +47,7 @@ private:
     uint8_t _pin;
     PulseState _state;
     unsigned long _stateStartTime;
-    static const unsigned long PULSE_DURATION = 50; // 50ms for each state
+    static const unsigned long PULSE_DURATION = 150; // 50ms for each state
 };
 
 #endif // ATOMIZER_H
