@@ -1,3 +1,6 @@
+// Only compile encoder support for ESP32, not ESP8266
+#ifndef ESP8266
+
 #include "encoder.h"
 #include <Arduino.h>
 
@@ -121,3 +124,5 @@ void IRAM_ATTR Encoder::readEncoderISR() {
 		}
 	}
 }
+
+#endif // !ESP8266

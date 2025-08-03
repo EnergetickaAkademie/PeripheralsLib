@@ -1,6 +1,9 @@
 #ifndef ENCODER_H
 #define ENCODER_H
 
+// Only compile encoder support for ESP32, not ESP8266
+#ifndef ESP8266
+
 #include "Peripheral.h"
 #include <AiEsp32RotaryEncoder.h>
 
@@ -34,4 +37,7 @@ private:
     // Static method to handle ISR
     static void IRAM_ATTR readEncoderISR();
 };
-#endif
+
+#endif // !ESP8266
+
+#endif // ENCODER_H

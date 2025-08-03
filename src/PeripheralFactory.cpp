@@ -38,6 +38,7 @@ OLEDDisplay* PeripheralFactory::createOLED(uint8_t w, uint8_t h, TwoWire *twi, i
 	return oled;
 }
 
+#ifndef ESP8266
 Encoder* PeripheralFactory::createEncoder(uint8_t pinA, uint8_t pinB, uint8_t pinSW, int16_t minVal, int16_t maxVal, int16_t step,
 	bool enable_speedup, unsigned int speedup_increment, unsigned int speedup_interval) {
 	Encoder* encoder = new Encoder(pinA, pinB, pinSW, minVal, maxVal, step,
@@ -45,6 +46,7 @@ Encoder* PeripheralFactory::createEncoder(uint8_t pinA, uint8_t pinB, uint8_t pi
 	add(encoder);
 	return encoder;
 }
+#endif
 
 RGBLED* PeripheralFactory::createRGBLED(uint8_t pin, uint16_t numPixels, neoPixelType type) {
 	RGBLED* rgbled = new RGBLED(pin, numPixels, type);
