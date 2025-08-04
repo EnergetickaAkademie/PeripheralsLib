@@ -26,11 +26,13 @@ LED* PeripheralFactory::createLed(int pin) {
 	return led;
 }
 
+#ifdef ESP8266
 Motor* PeripheralFactory::createMotor(int pinIA, int pinIB) {
 	Motor* motor = new Motor(pinIA, pinIB);
 	add(motor);
 	return motor;
 }
+#endif
 
 OLEDDisplay* PeripheralFactory::createOLED(uint8_t w, uint8_t h, TwoWire *twi, int8_t rst_pin) {
 	OLEDDisplay* oled = new OLEDDisplay(w, h, twi, rst_pin);

@@ -1,5 +1,7 @@
 #include "motor.h"
 
+#ifdef ESP8266
+
 Motor::Motor(int pinIA, int pinIB) 
     : _pinIA(pinIA), _pinIB(pinIB), _state(STOPPED), _speed(0), _stateChanged(true) {
 	pinMode(_pinIA, OUTPUT);
@@ -47,3 +49,5 @@ void Motor::stop() {
 	_state = STOPPED;
 	_stateChanged = true;
 }
+
+#endif // ESP8266

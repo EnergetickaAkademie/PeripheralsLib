@@ -1,6 +1,8 @@
 #ifndef MOTOR_H
 #define MOTOR_H
 
+#ifdef ESP8266
+
 #include <Arduino.h>
 #include "Peripheral.h"
 
@@ -25,5 +27,7 @@ private:
     int _speed;
     bool _stateChanged;
 };
+
+#endif // ESP8266
 
 #endif // MOTOR_H
