@@ -8,7 +8,7 @@
 
 class Motor : public Peripheral {
 public:
-    Motor(int pinIA, int pinIB);
+    Motor(int pinIA, int pinIB, int pwmFreq = 1000);
     void update() override;
     void forward(int speed);
     void backward(int speed);
@@ -23,6 +23,7 @@ private:
     
     int _pinIA;
     int _pinIB;
+	int _pwmFreq;
     MotorState _state;
     int _speed;
     bool _stateChanged;

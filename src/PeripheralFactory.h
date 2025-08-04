@@ -39,7 +39,7 @@ public:
     // Create methods for each peripheral type that return a typed pointer.
     LED* createLed(int pin);
 #ifdef ESP8266
-    Motor* createMotor(int pinIA, int pinIB);
+    Motor* createMotor(int pinIA, int pinIB, int pwmFreq = 1000);
 #endif
     OLEDDisplay* createOLED(uint8_t w, uint8_t h, TwoWire *twi, int8_t rst_pin = -1);
 #ifndef ESP8266
