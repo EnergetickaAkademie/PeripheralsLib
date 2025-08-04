@@ -6,9 +6,7 @@
 #include "Peripheral.h"
 // Include all concrete peripheral headers so the factory can create them.
 #include "led.h"
-#ifdef ESP8266
 #include "motor.h"
-#endif
 #include "oled.h"
 #ifndef ESP8266
 #include "encoder.h"
