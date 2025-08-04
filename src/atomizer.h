@@ -43,6 +43,12 @@ public:
      */
     bool isOn() const;
 
+    /**
+     * @brief Check the intended state of the atomizer (changes immediately on toggle).
+     * @return true if atomizer should be on, false if should be off.
+     */
+    bool getTargetState() const;
+
 private:
     enum PulseState {
         IDLE,               // Not executing any sequence
@@ -61,6 +67,7 @@ private:
     bool _pinState;            // Current pin state
     bool _pinStateChanged;     // Flag to indicate pin state needs updating
     bool _isOn;                // Track atomizer state (on/off)
+    bool _targetState;         // Track intended state (changes immediately on toggle)
     static const unsigned long PULSE_DURATION = 150; // 150ms for each state
 };
 

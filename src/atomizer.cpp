@@ -1,7 +1,7 @@
 #include "atomizer.h"
 
 Atomizer::Atomizer(uint8_t pin) 
-    : _pin(pin), _state(IDLE), _pendingState(IDLE), _stateStartTime(0), _pinState(HIGH), _pinStateChanged(true), _isOn(false) {
+    : _pin(pin), _state(IDLE), _pendingState(IDLE), _stateStartTime(0), _pinState(HIGH), _pinStateChanged(true), _isOn(false), _targetState(false) {
     pinMode(_pin, OUTPUT);
     // Don't set pin state here, let update() handle it
 }
@@ -85,6 +85,9 @@ void Atomizer::update() {
 
 void Atomizer::toggle() {
     if (_state == IDLE) {
+        // Toggle the target state immediately
+        _targetState = !_targetState;
+        
         // Start the pulse sequence - only set flags, no pin operations
         _pinState = HIGH;
         _pinStateChanged = true;
@@ -100,4 +103,8 @@ bool Atomizer::isActive() const {
 
 bool Atomizer::isOn() const {
     return _isOn;
+}
+
+bool Atomizer::getTargetState() const {
+    return _targetState;
 }
