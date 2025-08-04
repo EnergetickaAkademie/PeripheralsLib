@@ -1,84 +1,103 @@
 #include "atomizer.h"
 
 Atomizer::Atomizer(uint8_t pin) 
-    : _pin(pin), _state(IDLE), _stateStartTime(0), 
-      _pinState(HIGH), _pinStateChanged(true), 
-      _isOn(false), _pulsesToSend(0) {
+    : _pin(pin), _state(IDLE), _pendingState(IDLE), _stateStartTime(0), _pinState(HIGH), _pinStateChanged(true), _isOn(false) {
     pinMode(_pin, OUTPUT);
-    // Set initial pin state to HIGH (idle)
-    digitalWrite(_pin, _pinState);
+    // Don't set pin state here, let update() handle it
 }
 
 void Atomizer::update() {
-    // Handle pin state changes first
+    // Handle pin state changes
     if (_pinStateChanged) {
         digitalWrite(_pin, _pinState);
         _pinStateChanged = false;
     }
     
     if (_state == IDLE) {
-        return; // Nothing to do
+        return; // Nothing to do when idle
     }
 
     unsigned long currentTime = millis();
     unsigned long elapsed = currentTime - _stateStartTime;
 
+    // Check if current state duration has elapsed
     if (elapsed >= PULSE_DURATION) {
-        _stateStartTime = currentTime; // Reset timer for the next state
-
         switch (_state) {
-            case PULSE_START:
-                // Transition from initial HIGH to LOW
+            case FIRST_PULSE_HIGH:
+                // Transition from HIGH to LOW (first pulse)
                 _pinState = LOW;
                 _pinStateChanged = true;
-                _state = PULSE_LOW;
+                _state = FIRST_PULSE_LOW;
+                _stateStartTime = currentTime;
                 break;
                 
-            case PULSE_LOW:
-                // Transition from LOW back to HIGH
+            case FIRST_PULSE_LOW:
+                // Transition from LOW to HIGH (complete first pulse)
                 _pinState = HIGH;
                 _pinStateChanged = true;
-                _state = PULSE_END;
+                _state = FIRST_PULSE_FINAL;
+                _stateStartTime = currentTime;
                 break;
                 
-            case PULSE_END:
-                // Pulse finished, decrement count
-                _pulsesToSend--;
-                
-                if (_pulsesToSend > 0) {
-                    // If more pulses are needed, start the next one
-                    _state = PULSE_START;
+            case FIRST_PULSE_FINAL:
+                // First pulse complete
+                if (_isOn) {
+                    // Need second pulse to turn off
+                    _pinState = HIGH;
+                    _pinStateChanged = true;
+                    _state = SECOND_PULSE_HIGH;
+                    _stateStartTime = currentTime;
                 } else {
-                    // Sequence complete, return to idle
+                    // Single pulse complete, atomizer is now on
+                    _isOn = true;
                     _state = IDLE;
                 }
                 break;
-
+                
+            case SECOND_PULSE_HIGH:
+                // Transition from HIGH to LOW (second pulse)
+                _pinState = LOW;
+                _pinStateChanged = true;
+                _state = SECOND_PULSE_LOW;
+                _stateStartTime = currentTime;
+                break;
+                
+            case SECOND_PULSE_LOW:
+                // Transition from LOW to HIGH (complete second pulse)
+                _pinState = HIGH;
+                _pinStateChanged = true;
+                _state = SECOND_PULSE_FINAL;
+                _stateStartTime = currentTime;
+                break;
+                
+            case SECOND_PULSE_FINAL:
+                // Second pulse complete, atomizer is now off
+                _isOn = false;
+                _state = IDLE;
+                break;
+                
             case IDLE:
-                // Should not happen here, but for safety
+                // Should not reach here, but just in case
                 break;
         }
     }
 }
 
 void Atomizer::toggle() {
-    if (isActive()) {
-        return; // Don't start a new sequence if one is already running
+    if (_state == IDLE) {
+        // Start the pulse sequence - only set flags, no pin operations
+        _pinState = HIGH;
+        _pinStateChanged = true;
+        _state = FIRST_PULSE_HIGH;
+        _stateStartTime = millis();
     }
-
-    _isOn = !_isOn; // Toggle the logical state
-
-    if (_isOn) {
-        _pulsesToSend = 1; // 1 pulse to turn ON
-    } else {
-        _pulsesToSend = 2; // 2 pulses to turn OFF
-    }
-
-    // Start the first pulse
-    _state = PULSE_START;
-    _stateStartTime = millis();
+    // If already active, ignore the request (or queue it if needed)
 }
 
 bool Atomizer::isActive() const {
     return _state != IDLE;
+}
+
+bool Atomizer::isOn() const {
+    return _isOn;
 }
