@@ -1,7 +1,7 @@
 #include "atomizer.h"
 
 Atomizer::Atomizer(uint8_t pin) 
-    : _pin(pin), _state(IDLE), _pendingState(IDLE), _stateStartTime(0), _pinState(HIGH), _pinStateChanged(true) {
+    : _pin(pin), _state(IDLE), _atomizerState(ATOMIZER_OFF), _pendingState(IDLE), _stateStartTime(0), _pinState(HIGH), _pinStateChanged(true) {
     pinMode(_pin, OUTPUT);
     // Don't set pin state here, let update() handle it
 }
@@ -40,8 +40,21 @@ void Atomizer::update() {
                 break;
                 
             case FINAL_HIGH:
-                // Sequence complete, return to idle
+                // Sequence complete, return to idle and update atomizer state
                 _state = IDLE;
+                
+                // Update atomizer state based on current state
+                switch (_atomizerState) {
+                    case ATOMIZER_OFF:
+                        _atomizerState = ATOMIZER_ON;
+                        break;
+                    case ATOMIZER_ON:
+                        _atomizerState = ATOMIZER_TURNING_OFF;
+                        break;
+                    case ATOMIZER_TURNING_OFF:
+                        _atomizerState = ATOMIZER_OFF;
+                        break;
+                }
                 break;
                 
             case IDLE:
@@ -64,4 +77,8 @@ void Atomizer::toggle() {
 
 bool Atomizer::isActive() const {
     return _state != IDLE;
+}
+
+bool Atomizer::isAtomizerOn() const {
+    return _atomizerState == ATOMIZER_ON;
 }
