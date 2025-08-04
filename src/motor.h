@@ -12,6 +12,10 @@ public:
 	void backward(int speed);
 	void stop();
 
+	void enableSpeedup(bool enabled);
+	void setSpeedupConfig(float multiplier, unsigned long duration_ms);
+	bool isSpeedupActive() const;
+
 private:
 	enum MotorState {
 		STOPPED,
@@ -25,6 +29,11 @@ private:
 	MotorState _state;
 	int _speed;
 	bool _stateChanged;
+	bool _speedupEnabled;
+	float _speedupMultiplier;
+	unsigned long _speedupDuration;
+	bool _isInSpeedup;
+	unsigned long _speedupStartTime;
 };
 
 #endif // MOTOR_H
