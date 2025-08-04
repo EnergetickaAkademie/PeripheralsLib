@@ -1,84 +1,84 @@
 #include "atomizer.h"
 
 Atomizer::Atomizer(uint8_t pin) 
-    : _pin(pin), _state(IDLE), _atomizerState(ATOMIZER_OFF), _pendingState(IDLE), _stateStartTime(0), _pinState(HIGH), _pinStateChanged(true) {
+    : _pin(pin), _state(IDLE), _stateStartTime(0), 
+      _pinState(HIGH), _pinStateChanged(true), 
+      _isOn(false), _pulsesToSend(0) {
     pinMode(_pin, OUTPUT);
-    // Don't set pin state here, let update() handle it
+    // Set initial pin state to HIGH (idle)
+    digitalWrite(_pin, _pinState);
 }
 
 void Atomizer::update() {
-    // Handle pin state changes
+    // Handle pin state changes first
     if (_pinStateChanged) {
         digitalWrite(_pin, _pinState);
         _pinStateChanged = false;
     }
     
     if (_state == IDLE) {
-        return; // Nothing to do when idle
+        return; // Nothing to do
     }
 
     unsigned long currentTime = millis();
     unsigned long elapsed = currentTime - _stateStartTime;
 
-    // Check if current state duration has elapsed
     if (elapsed >= PULSE_DURATION) {
+        _stateStartTime = currentTime; // Reset timer for the next state
+
         switch (_state) {
-            case FIRST_HIGH:
-                // Transition from HIGH to LOW
+            case PULSE_START:
+                // Transition from initial HIGH to LOW
                 _pinState = LOW;
                 _pinStateChanged = true;
-                _state = LOW_PULSE;
-                _stateStartTime = currentTime;
+                _state = PULSE_LOW;
                 break;
                 
-            case LOW_PULSE:
-                // Transition from LOW to HIGH
+            case PULSE_LOW:
+                // Transition from LOW back to HIGH
                 _pinState = HIGH;
                 _pinStateChanged = true;
-                _state = FINAL_HIGH;
-                _stateStartTime = currentTime;
+                _state = PULSE_END;
                 break;
                 
-            case FINAL_HIGH:
-                // Sequence complete, return to idle and update atomizer state
-                _state = IDLE;
+            case PULSE_END:
+                // Pulse finished, decrement count
+                _pulsesToSend--;
                 
-                // Update atomizer state based on current state
-                switch (_atomizerState) {
-                    case ATOMIZER_OFF:
-                        _atomizerState = ATOMIZER_ON;
-                        break;
-                    case ATOMIZER_ON:
-                        _atomizerState = ATOMIZER_TURNING_OFF;
-                        break;
-                    case ATOMIZER_TURNING_OFF:
-                        _atomizerState = ATOMIZER_OFF;
-                        break;
+                if (_pulsesToSend > 0) {
+                    // If more pulses are needed, start the next one
+                    _state = PULSE_START;
+                } else {
+                    // Sequence complete, return to idle
+                    _state = IDLE;
                 }
                 break;
-                
+
             case IDLE:
-                // Should not reach here, but just in case
+                // Should not happen here, but for safety
                 break;
         }
     }
 }
 
 void Atomizer::toggle() {
-    if (_state == IDLE) {
-        // Start the pulse sequence - only set flags, no pin operations
-        _pinState = HIGH;
-        _pinStateChanged = true;
-        _state = FIRST_HIGH;
-        _stateStartTime = millis();
+    if (isActive()) {
+        return; // Don't start a new sequence if one is already running
     }
-    // If already active, ignore the request (or queue it if needed)
+
+    _isOn = !_isOn; // Toggle the logical state
+
+    if (_isOn) {
+        _pulsesToSend = 1; // 1 pulse to turn ON
+    } else {
+        _pulsesToSend = 2; // 2 pulses to turn OFF
+    }
+
+    // Start the first pulse
+    _state = PULSE_START;
+    _stateStartTime = millis();
 }
 
 bool Atomizer::isActive() const {
     return _state != IDLE;
-}
-
-bool Atomizer::isAtomizerOn() const {
-    return _atomizerState == ATOMIZER_ON;
 }

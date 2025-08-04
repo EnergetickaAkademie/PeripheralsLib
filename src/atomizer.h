@@ -27,7 +27,6 @@ public:
     /**
      * @brief Trigger the atomizer switching sequence.
      * This starts the non-blocking pulse sequence to toggle the atomizer.
-     * Note: Turning the atomizer OFF requires two consecutive toggle operations.
      */
     void toggle();
 
@@ -37,34 +36,24 @@ public:
      */
     bool isActive() const;
 
-    /**
-     * @brief Check if the atomizer is currently ON.
-     * @return true if atomizer is ON, false if OFF.
-     */
-    bool isAtomizerOn() const;
-
 private:
     enum PulseState {
         IDLE,           // Not executing any sequence
-        FIRST_HIGH,     // First HIGH state (50ms)
-        LOW_PULSE,      // LOW state (50ms)  
-        FINAL_HIGH      // Final HIGH state (50ms)
-    };
-
-    enum AtomizerState {
-        ATOMIZER_OFF,           // Atomizer is OFF
-        ATOMIZER_ON,            // Atomizer is ON
-        ATOMIZER_TURNING_OFF    // Atomizer received first OFF pulse, needs one more
+        PULSE_START,    // Starting a new pulse
+        PULSE_LOW,      // LOW state in a pulse
+        PULSE_END       // End of a pulse, returning to HIGH
     };
 
     uint8_t _pin;
     PulseState _state;
-    AtomizerState _atomizerState;
-    PulseState _pendingState;  // For handling requests during active sequence
     unsigned long _stateStartTime;
     bool _pinState;            // Current pin state
     bool _pinStateChanged;     // Flag to indicate pin state needs updating
-    static const unsigned long PULSE_DURATION = 150; // 150ms for each state
+    
+    bool _isOn;                // Tracks if the atomizer is logically on or off
+    uint8_t _pulsesToSend;     // How many pulses are remaining in the current sequence
+
+    static const unsigned long PULSE_DURATION = 50; // 50ms for each state
 };
 
 #endif // ATOMIZER_H
