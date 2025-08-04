@@ -1,34 +1,39 @@
 #ifndef MOTOR_H
 #define MOTOR_H
 
-#ifdef ESP8266
-
 #include <Arduino.h>
 #include "Peripheral.h"
 
 class Motor : public Peripheral {
 public:
-    Motor(int pinIA, int pinIB, int pwmFreq = 1000);
-    void update() override;
-    void forward(int speed);
-    void backward(int speed);
-    void stop();
+	Motor(int pinIA, int pinIB, int pwmFreq = 1000);
+	void update() override;
+	void forward(int speed);
+	void backward(int speed);
+	void stop();
+
+	void enableSpeedup(bool enabled);
+	void setSpeedupConfig(float multiplier, unsigned long duration_ms);
+	bool isSpeedupActive() const;
 
 private:
-    enum MotorState {
-        STOPPED,
-        FORWARD,
-        BACKWARD
-    };
-    
-    int _pinIA;
-    int _pinIB;
+	enum MotorState {
+		STOPPED,
+		FORWARD,
+		BACKWARD
+	};
+	
+	int _pinIA;
+	int _pinIB;
 	int _pwmFreq;
-    MotorState _state;
-    int _speed;
-    bool _stateChanged;
+	MotorState _state;
+	int _speed;
+	bool _stateChanged;
+	bool _speedupEnabled;
+	float _speedupMultiplier;
+	unsigned long _speedupDuration;
+	bool _isInSpeedup;
+	unsigned long _speedupStartTime;
 };
-
-#endif // ESP8266
 
 #endif // MOTOR_H
