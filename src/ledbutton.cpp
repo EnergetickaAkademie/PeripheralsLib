@@ -24,9 +24,10 @@ void LEDButton::update() {
 void LEDButton::setMode(LEDButtonMode mode) {
 	_mode = mode;
 
-	_button.setPressedHandler(nullptr);
-	_button.setReleasedHandler(nullptr);
-	_button.setClickHandler(nullptr);
+        _button.setPressedHandler(nullptr);
+        _button.setReleasedHandler(nullptr);
+        _button.setClickHandler(nullptr);
+        _button.setLongClickHandler(nullptr);
 
 	switch (_mode) {
 		case LEDButtonMode::FOLLOW:
