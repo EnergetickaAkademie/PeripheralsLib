@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-const byte SegmentDisplay::digitToSegment[12] = {
+const byte SegmentDisplay::digitToSegment[13] = {
 	0b00111111, // 0
 	0b00000110, // 1
 	0b01011011, // 2
@@ -14,7 +14,8 @@ const byte SegmentDisplay::digitToSegment[12] = {
 	0b01111111, // 8
 	0b01101111, // 9
 	0b10000000, // 10: Decimal Point (DP)
-	0b00000000  // 11: Blank
+	0b00000000, // 11: Blank
+	0b01000000  // 12: Minus '-'
 };
 
 const byte SegmentDisplay::digitSelect[8] = {
@@ -76,6 +77,12 @@ void SegmentDisplay::displayString(const char* str) {
 			decimalFound = true;
 		} else if (c == ' ') {
 			_digit_values[displayPos--] = 11;
+		} else if (c == '-') {
+			_digit_values[displayPos] = 12; // minus sign
+			_dp_values[displayPos] = false;
+			displayPos--;
+			// decimal point cannot apply to a minus sign
+			decimalFound = false;
 		}
 	}
 }

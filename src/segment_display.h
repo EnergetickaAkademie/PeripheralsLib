@@ -52,7 +52,8 @@ public:
     void test();
 
 private:
-    static const byte digitToSegment[12];
+    // 0-9 digits, 10 = decimal point (DP), 11 = blank, 12 = minus '-'
+    static const byte digitToSegment[13];
     static const byte digitSelect[8];
 
     uint8_t _numDigits;
