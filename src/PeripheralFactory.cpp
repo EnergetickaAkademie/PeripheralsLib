@@ -32,6 +32,12 @@ Motor* PeripheralFactory::createMotor(int pinIA, int pinIB, int pwmFreq) {
 	return motor;
 }
 
+MotorSinglePin* PeripheralFactory::createMotorSinglePin(int pinA, int pwmFreq) {
+	MotorSinglePin* motor = new MotorSinglePin(pinA, pwmFreq);
+	add(motor);
+	return motor;
+}
+
 OLEDDisplay* PeripheralFactory::createOLED(uint8_t w, uint8_t h, TwoWire *twi, int8_t rst_pin) {
 	OLEDDisplay* oled = new OLEDDisplay(w, h, twi, rst_pin);
 	add(oled);

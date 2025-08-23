@@ -7,6 +7,7 @@
 // Include all concrete peripheral headers so the factory can create them.
 #include "led.h"
 #include "motor.h"
+#include "motor_single_pin.h"
 #include "oled.h"
 #ifndef ESP8266
 #include "encoder.h"
@@ -37,6 +38,7 @@ public:
     // Create methods for each peripheral type that return a typed pointer.
     LED* createLed(int pin);
     Motor* createMotor(int pinIA, int pinIB, int pwmFreq = 1000);
+    MotorSinglePin* createMotorSinglePin(int pinA, int pwmFreq = 1000);
     OLEDDisplay* createOLED(uint8_t w, uint8_t h, TwoWire *twi, int8_t rst_pin = -1);
 #ifndef ESP8266
     Encoder* createEncoder(uint8_t pinA, uint8_t pinB, uint8_t pinSW, int16_t minVal = 0, int16_t maxVal = 100, int16_t step = 1,
