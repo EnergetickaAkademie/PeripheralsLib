@@ -38,6 +38,18 @@ public:
 	 */
 	void setRawData(const byte* data, uint8_t count);
 
+	/**
+	 * @brief Turns the bargraph on or off completely.
+	 * @param enabled If true, the bargraph shows LEDs. If false, all LEDs are off.
+	 */
+	void setEnabled(bool enabled);
+
+	/**
+	 * @brief Gets the current enabled state of the bargraph.
+	 * @return true if the bargraph is enabled, false if turned off.
+	 */
+	bool isEnabled() const;
+
 	// --- Implementations for the ShiftRegisterDevice interface ---
 	const byte* getShiftData() const override;
 	uint8_t getRegisterCount() const override;
@@ -47,6 +59,7 @@ private:
 	uint8_t _registerCount;
 	byte* _shiftData; // A raw pointer to a dynamically allocated array
 	bool _reversed; // Flag to control display direction
+	bool _enabled;  // Controls whether the bargraph is on or off
 };
 
 #endif // BARGRAPH_H

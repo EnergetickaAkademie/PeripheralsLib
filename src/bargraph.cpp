@@ -1,6 +1,6 @@
 #include "bargraph.h"
 
-Bargraph::Bargraph(uint8_t numLeds) : _numLeds(numLeds), _reversed(false) {
+Bargraph::Bargraph(uint8_t numLeds) : _numLeds(numLeds), _reversed(false), _enabled(true) {
 	_registerCount = (numLeds + 7) / 8;
 
 	_shiftData = new byte[_registerCount];
@@ -57,7 +57,20 @@ void Bargraph::setRawData(const byte* data, uint8_t count) {
 	memcpy(_shiftData, data, count);
 }
 
+void Bargraph::setEnabled(bool enabled) {
+	_enabled = enabled;
+}
+
+bool Bargraph::isEnabled() const {
+	return _enabled;
+}
+
 const byte* Bargraph::getShiftData() const {
+	if (!_enabled) {
+		// When disabled, return all zeros to turn off all LEDs
+		static byte emptyData[16] = {0}; // Support up to 16 registers (128 LEDs)
+		return emptyData;
+	}
 	return _shiftData;
 }
 

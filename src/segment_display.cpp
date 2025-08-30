@@ -24,7 +24,7 @@ const byte SegmentDisplay::digitSelect[8] = {
 };
 
 SegmentDisplay::SegmentDisplay(uint8_t numDigits) 
-	: _numDigits(numDigits), _currentDigit(0) {
+	: _numDigits(numDigits), _currentDigit(0), _enabled(true) {
 	_digit_values = new byte[_numDigits];
 	_dp_values = new bool[_numDigits];
 	clear(); // Initialize display to be blank
@@ -87,6 +87,14 @@ void SegmentDisplay::displayString(const char* str) {
 	}
 }
 
+void SegmentDisplay::setEnabled(bool enabled) {
+	_enabled = enabled;
+}
+
+bool SegmentDisplay::isEnabled() const {
+	return _enabled;
+}
+
 const byte* SegmentDisplay::getShiftData() const {
 	return _shiftData;
 }
@@ -96,6 +104,13 @@ uint8_t SegmentDisplay::getRegisterCount() const {
 }
 
 void SegmentDisplay::update() {
+	if (!_enabled) {
+		// When disabled, output zeros to turn off all segments and digits
+		_shiftData[0] = 0x00;
+		_shiftData[1] = 0x00;
+		return;
+	}
+
 	byte value = _digit_values[_currentDigit];
 	byte segmentPattern = digitToSegment[value];
 
@@ -110,4 +125,12 @@ void SegmentDisplay::update() {
 	_shiftData[1] = segmentPattern;
 
 	_currentDigit = (_currentDigit + 1) % _numDigits;
+}
+
+void SegmentDisplay::test() {
+	// Test method - turn on all segments for all digits
+	for (int i = 0; i < _numDigits; i++) {
+		_digit_values[i] = 8; // Display '8' which lights up all segments
+		_dp_values[i] = true; // Also turn on decimal point
+	}
 }

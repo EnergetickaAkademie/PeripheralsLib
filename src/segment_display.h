@@ -29,6 +29,18 @@ public:
     void displayString(const char* str);
     void clear();
 
+    /**
+     * @brief Turns the display on or off completely.
+     * @param enabled If true, the display shows content. If false, all segments are off.
+     */
+    void setEnabled(bool enabled);
+
+    /**
+     * @brief Gets the current enabled state of the display.
+     * @return true if the display is enabled, false if turned off.
+     */
+    bool isEnabled() const;
+
     // --- Implementations for the ShiftRegisterDevice interface ---
 
     /**
@@ -60,6 +72,7 @@ private:
     uint8_t _currentDigit;
     byte* _digit_values; // Stores the value (0-9) for each digit position
     bool* _dp_values;    // Stores the decimal point state for each digit
+    bool _enabled;       // Controls whether the display is on or off
 
     byte _shiftData[2];
 };
