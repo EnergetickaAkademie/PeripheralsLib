@@ -1,7 +1,7 @@
 #include "motor.h"
 
 Motor::Motor(int pinIA, int pinIB, int pwmFreq) 
-	: _pinIA(pinIA), _pinIB(pinIB), _pwmFreq(pwmFreq), _state(STOPPED), _speed(0), _previousSpeed(0), _stateChanged(true),
+	: _pinIA(pinIA), _pinIB(pinIB), _pwmFreq(pwmFreq), _state(STOPPED), _speed(0), _stateChanged(true),
 	  _speedupEnabled(false), _speedupMultiplier(1.5f), _speedupDuration(300), _isInSpeedup(false), _speedupStartTime(0) {
 	pinMode(_pinIA, OUTPUT);
 	pinMode(_pinIB, OUTPUT);
@@ -61,29 +61,33 @@ void Motor::update() {
 }
 
 void Motor::forward(int speed) {
-	bool speedChanged = (_speed != speed);
+	// Trigger changes (and possible speedup) only if direction or speed changed
+	bool changed = (_state != FORWARD) || (speed != _speed);
+	if (!changed) {
+		return; // no change -> do not restart speedup
+	}
 	_speed = speed;
 	_state = FORWARD;
 	_stateChanged = true;
-	
-	if (_speedupEnabled && speedChanged) {
+	if (_speedupEnabled) {
 		_isInSpeedup = true;
 		_speedupStartTime = millis();
 	}
-	_previousSpeed = speed;
 }
 
 void Motor::backward(int speed) {
-	bool speedChanged = (_speed != speed);
+	// Trigger changes (and possible speedup) only if direction or speed changed
+	bool changed = (_state != BACKWARD) || (speed != _speed);
+	if (!changed) {
+		return; // no change -> do not restart speedup
+	}
 	_speed = speed;
 	_state = BACKWARD;
 	_stateChanged = true;
-	
-	if (_speedupEnabled && speedChanged) {
+	if (_speedupEnabled) {
 		_isInSpeedup = true;
 		_speedupStartTime = millis();
 	}
-	_previousSpeed = speed;
 }
 
 void Motor::stop() {
@@ -91,7 +95,6 @@ void Motor::stop() {
 	_state = STOPPED;
 	_stateChanged = true;
 	_isInSpeedup = false;
-	_previousSpeed = 0;
 }
 
 void Motor::enableSpeedup(bool enabled) {

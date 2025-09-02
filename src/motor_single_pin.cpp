@@ -1,7 +1,7 @@
 #include "motor_single_pin.h"
 
 MotorSinglePin::MotorSinglePin(int pinA, int pwmFreq) 
-	: _pinA(pinA), _pwmFreq(pwmFreq), _state(STOPPED), _speed(0), _previousSpeed(0), _stateChanged(true),
+	: _pinA(pinA), _pwmFreq(pwmFreq), _state(STOPPED), _speed(0), _stateChanged(true),
 	  _speedupEnabled(false), _speedupMultiplier(1.5f), _speedupDuration(300), _isInSpeedup(false), _speedupStartTime(0) {
 	pinMode(_pinA, OUTPUT);
 	// Pin B is connected through resistor to ground, so we don't control it
@@ -46,16 +46,18 @@ void MotorSinglePin::update() {
 }
 
 void MotorSinglePin::forward(int speed) {
-	bool speedChanged = (_speed != speed);
+	// Trigger changes (and possible speedup) only if speed changed or we were stopped
+	bool changed = (_state != FORWARD) || (speed != _speed);
+	if (!changed) {
+		return; // no change -> do not restart speedup
+	}
 	_speed = speed;
 	_state = FORWARD;
 	_stateChanged = true;
-	
-	if (_speedupEnabled && speedChanged) {
+	if (_speedupEnabled) {
 		_isInSpeedup = true;
 		_speedupStartTime = millis();
 	}
-	_previousSpeed = speed;
 }
 
 void MotorSinglePin::stop() {
@@ -63,7 +65,6 @@ void MotorSinglePin::stop() {
 	_state = STOPPED;
 	_stateChanged = true;
 	_isInSpeedup = false;
-	_previousSpeed = 0;
 }
 
 void MotorSinglePin::enableSpeedup(bool enabled) {
