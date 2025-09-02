@@ -25,6 +25,7 @@ private:
 	int _pwmFreq;
 	MotorState _state;
 	int _speed;
+	int _previousSpeed;
 	bool _stateChanged;
 	bool _speedupEnabled;
 	float _speedupMultiplier;
