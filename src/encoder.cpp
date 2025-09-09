@@ -18,7 +18,9 @@ Encoder::Encoder(uint8_t pinA, uint8_t pinB, uint8_t pinSW, int16_t minVal, int1
 	_pinSW(pinSW)
 {
 	// Create instance-specific rotary object
-	_rotary = new AiEsp32RotaryEncoder(pinA, pinB, pinSW, -1, steps_per_click, false);
+	// Use -1 for button pin if disabled (255 causes GPIO errors)
+	int8_t buttonPin = (pinSW == 255) ? -1 : pinSW;
+	_rotary = new AiEsp32RotaryEncoder(pinA, pinB, buttonPin, -1, steps_per_click, false);
 	
 	// Initialize before setting up interrupts
 	_rotary->begin();
