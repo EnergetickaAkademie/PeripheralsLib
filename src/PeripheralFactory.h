@@ -22,6 +22,8 @@
 #include "ledbutton.h"
 #include "periodic.h"
 #include "atomizer.h"
+#include "input_shift_register_chain.h"
+#include "shift_encoder.h"
 
 /**
  * @brief Manages and creates hardware peripherals.
@@ -31,41 +33,44 @@
  */
 class PeripheralFactory {
 public:
-    PeripheralFactory();
-    ~PeripheralFactory(); // Destructor to clean up dynamically allocated peripherals
+	PeripheralFactory();
+	~PeripheralFactory(); // Destructor to clean up dynamically allocated peripherals
 
-    // --- Factory Methods ---
-    // Create methods for each peripheral type that return a typed pointer.
-    LED* createLed(int pin);
-    Motor* createMotor(int pinIA, int pinIB, int pwmFreq = 1000);
-    MotorSinglePin* createMotorSinglePin(int pinA, int pwmFreq = 1000);
-    OLEDDisplay* createOLED(uint8_t w, uint8_t h, TwoWire *twi, int8_t rst_pin = -1);
+	// --- Factory Methods ---
+	// Create methods for each peripheral type that return a typed pointer.
+	LED* createLed(int pin);
+	Motor* createMotor(int pinIA, int pinIB, int pwmFreq = 1000);
+	MotorSinglePin* createMotorSinglePin(int pinA, int pwmFreq = 1000);
+	OLEDDisplay* createOLED(uint8_t w, uint8_t h, TwoWire *twi, int8_t rst_pin = -1);
 #ifndef ESP8266
-    Encoder* createEncoder(uint8_t pinA, uint8_t pinB, uint8_t pinSW, int16_t minVal = 0, int16_t maxVal = 100, int16_t step = 1,
-                                bool enable_speedup = true, unsigned int speedup_increment = 5, unsigned int speedup_interval = 75);
+	Encoder* createEncoder(uint8_t pinA, uint8_t pinB, uint8_t pinSW, int16_t minVal = 0, int16_t maxVal = 100, int16_t step = 1,
+								bool enable_speedup = true, unsigned int speedup_increment = 5, unsigned int speedup_interval = 75);
 #endif
-    RGBLED* createRGBLED(uint8_t pin, uint16_t numPixels = 1, neoPixelType type = NEO_GRB + NEO_KHZ800);
-    Buzzer* createBuzzer(uint8_t pin);
-    ShiftRegisterChain* createShiftRegisterChain(uint8_t latchPin, uint8_t dataPin, uint8_t clockPin);
-    LiquidCrystal* createLiquidCrystal(uint8_t address, uint8_t cols, uint8_t rows);
-    Button* createButton(uint8_t pin);
-    LEDButton* createLEDButton(uint8_t buttonPin, uint8_t ledPin);
-    Periodic* createPeriodic(unsigned long interval, std::function<void()> callback);
-    Atomizer* createAtomizer(uint8_t pin);
+	RGBLED* createRGBLED(uint8_t pin, uint16_t numPixels = 1, neoPixelType type = NEO_GRB + NEO_KHZ800);
+	Buzzer* createBuzzer(uint8_t pin);
+	ShiftRegisterChain* createShiftRegisterChain(uint8_t latchPin, uint8_t dataPin, uint8_t clockPin);
+	LiquidCrystal* createLiquidCrystal(uint8_t address, uint8_t cols, uint8_t rows);
+	Button* createButton(uint8_t pin);
+	LEDButton* createLEDButton(uint8_t buttonPin, uint8_t ledPin);
+	Periodic* createPeriodic(unsigned long interval, std::function<void()> callback);
+	Atomizer* createAtomizer(uint8_t pin);
 
-    // --- Factory Methods for Shift Register Devices ---
-    Bargraph* createBargraph(ShiftRegisterChain* chain, uint8_t numLeds = 16);
-    SegmentDisplay* createSegmentDisplay(ShiftRegisterChain* chain, uint8_t numDigits = 4);
+	// --- Factory Methods for Shift Register Devices ---
+	Bargraph* createBargraph(ShiftRegisterChain* chain, uint8_t numLeds = 16);
+	SegmentDisplay* createSegmentDisplay(ShiftRegisterChain* chain, uint8_t numDigits = 4);
 
-    /**
-     * @brief Calls the update() method on all registered peripherals.
-     */
-    void update();
+	InputShiftRegisterChain* createInputShiftRegisterChain(uint8_t load_pin, uint8_t data_pin, uint8_t clock_pin, uint8_t num_registers);
+	ShiftEncoder* createShiftEncoder(InputShiftRegisterChain* chain, uint8_t register_index, uint8_t bit_position, 
+									int32_t min_value = 0, int32_t max_value = 100, int32_t step = 1);
+	/**
+	 * @brief Calls the update() method on all registered peripherals.
+	 */
+	void update();
 
 private:
-    void add(Peripheral* peripheral); // Private, used internally by `create` methods
+	void add(Peripheral* peripheral); // Private, used internally by `create` methods
 
-    std::vector<Peripheral*> _peripherals;
+	std::vector<Peripheral*> _peripherals;
 };
 
 #endif // PERIPHERAL_FACTORY_H

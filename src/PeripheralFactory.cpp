@@ -127,3 +127,18 @@ void PeripheralFactory::update() {
 		}
 	}
 }
+
+InputShiftRegisterChain* PeripheralFactory::createInputShiftRegisterChain(uint8_t load_pin, uint8_t data_pin, uint8_t clock_pin, uint8_t num_registers) {
+	InputShiftRegisterChain* chain = new InputShiftRegisterChain(load_pin, data_pin, clock_pin, num_registers);
+	add(chain);
+	return chain;
+}
+
+ShiftEncoder* PeripheralFactory::createShiftEncoder(InputShiftRegisterChain* chain, uint8_t register_index, uint8_t bit_position, 
+													int32_t min_value, int32_t max_value, int32_t step) {
+	if (!chain) return nullptr;
+	
+	ShiftEncoder* encoder = new ShiftEncoder(register_index, bit_position, min_value, max_value, step);
+	chain->add_device(encoder);
+	return encoder;
+}
