@@ -1,3 +1,5 @@
+#ifndef CH32V003
+
 #include "rgbled.h"
 #include <Arduino.h>
 
@@ -45,3 +47,5 @@ void RGBLED::setBrightness(uint8_t brightness) {
 void RGBLED::show() {
 	_showRequested = true;
 }
+
+#endif // CH32V003

@@ -1,6 +1,8 @@
 #ifndef RGBLED_H
 #define RGBLED_H
 
+#ifndef CH32V003
+
 #include "Peripheral.h"
 #include <Adafruit_NeoPixel.h>
 
@@ -19,5 +21,7 @@ private:
     bool _brightnessChanged;
     bool _showRequested;
 };
+
+#endif
 
 #endif // RGBLED_H

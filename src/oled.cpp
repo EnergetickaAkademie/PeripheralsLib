@@ -1,3 +1,5 @@
+#ifndef CH32V003
+
 #include "oled.h"
 
 // Constructor: Initializes the member variables, including the _display object.
@@ -114,3 +116,5 @@ void OLEDDisplay::println() {
 Adafruit_SSD1306& OLEDDisplay::getDisplay() {
 	return _display;
 }
+
+#endif // CH32V003

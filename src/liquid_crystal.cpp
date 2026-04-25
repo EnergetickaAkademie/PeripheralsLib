@@ -1,3 +1,5 @@
+#ifndef CH32V003
+
 #include "liquid_crystal.h"
 
 LiquidCrystal::LiquidCrystal(uint8_t i2c_addr, uint8_t cols, uint8_t rows)
@@ -161,3 +163,5 @@ void LiquidCrystal::load_custom_character(uint8_t char_num, uint8_t *rows) {
 void LiquidCrystal::printstr(const char c[]) {
 	_lcd.printstr(c);
 }
+
+#endif // CH32V003

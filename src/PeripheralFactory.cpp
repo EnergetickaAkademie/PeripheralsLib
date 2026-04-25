@@ -38,13 +38,7 @@ MotorSinglePin* PeripheralFactory::createMotorSinglePin(int pinA, int pwmFreq) {
 	return motor;
 }
 
-OLEDDisplay* PeripheralFactory::createOLED(uint8_t w, uint8_t h, TwoWire *twi, int8_t rst_pin) {
-	OLEDDisplay* oled = new OLEDDisplay(w, h, twi, rst_pin);
-	add(oled);
-	return oled;
-}
-
-#ifndef ESP8266
+#if !defined(ESP8266) && !defined(CH32V003)
 Encoder* PeripheralFactory::createEncoder(uint8_t pinA, uint8_t pinB, uint8_t pinSW, int16_t minVal, int16_t maxVal, int16_t step,
 	bool enable_speedup, unsigned int speedup_increment, unsigned int speedup_interval) {
 	Encoder* encoder = new Encoder(pinA, pinB, pinSW, minVal, maxVal, step,
@@ -54,11 +48,25 @@ Encoder* PeripheralFactory::createEncoder(uint8_t pinA, uint8_t pinB, uint8_t pi
 }
 #endif
 
+#ifndef CH32V003
+LiquidCrystal* PeripheralFactory::createLiquidCrystal(uint8_t address, uint8_t cols, uint8_t rows) {
+	LiquidCrystal* lcd = new LiquidCrystal(address, cols, rows);
+	add(lcd);
+	return lcd;
+}
+
+OLEDDisplay* PeripheralFactory::createOLED(uint8_t w, uint8_t h, TwoWire *twi, int8_t rst_pin) {
+	OLEDDisplay* oled = new OLEDDisplay(w, h, twi, rst_pin);
+	add(oled);
+	return oled;
+}
+
 RGBLED* PeripheralFactory::createRGBLED(uint8_t pin, uint16_t numPixels, neoPixelType type) {
 	RGBLED* rgbled = new RGBLED(pin, numPixels, type);
 	add(rgbled);
 	return rgbled;
 }
+#endif
 
 Buzzer* PeripheralFactory::createBuzzer(uint8_t pin) {
 	Buzzer* buzzer = new Buzzer(pin);
@@ -114,12 +122,6 @@ SegmentDisplay* PeripheralFactory::createSegmentDisplay(ShiftRegisterChain* chai
 	return display;
 }
 
-LiquidCrystal* PeripheralFactory::createLiquidCrystal(uint8_t address, uint8_t cols, uint8_t rows) {
-	LiquidCrystal* lcd = new LiquidCrystal(address, cols, rows);
-	add(lcd);
-	return lcd;
-}
-
 void PeripheralFactory::update() {
 	for (auto& peripheral : _peripherals) {
 		if (peripheral) {
@@ -132,14 +134,6 @@ InputShiftRegisterChain* PeripheralFactory::createInputShiftRegisterChain(uint8_
 	InputShiftRegisterChain* chain = new InputShiftRegisterChain(load_pin, data_pin, clock_pin, num_registers);
 	add(chain);
 	return chain;
-}
-
-ShiftButton* PeripheralFactory::createShiftButton(InputShiftRegisterChain* chain, uint8_t register_index, uint8_t bit_position, bool active_high) {
-	if (!chain) return nullptr;
-
-	ShiftButton* button = new ShiftButton(register_index, bit_position, active_high);
-	chain->add_device(button);
-	return button;
 }
 
 ShiftEncoder* PeripheralFactory::createShiftEncoder(InputShiftRegisterChain* chain, uint8_t register_index, uint8_t bit_position, 

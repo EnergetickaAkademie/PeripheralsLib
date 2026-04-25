@@ -1,6 +1,8 @@
 #ifndef OLED_DISPLAY_H
 #define OLED_DISPLAY_H
 
+#ifndef CH32V003
+
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Wire.h>
@@ -45,5 +47,7 @@ private:
     int8_t _resetPin;
     TwoWire *_twi;
 };
+
+#endif
 
 #endif // OLED_DISPLAY_H

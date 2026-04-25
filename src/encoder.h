@@ -2,7 +2,7 @@
 #define ENCODER_H
 
 // Only compile encoder support for ESP32, not ESP8266
-#ifndef ESP8266
+#if !defined(ESP8266) && !defined(CH32V003)
 
 #include "Peripheral.h"
 #include <AiEsp32RotaryEncoder.h>

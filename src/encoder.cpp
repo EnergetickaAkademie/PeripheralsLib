@@ -1,5 +1,5 @@
-// Only compile encoder support for ESP32, not ESP8266
-#ifndef ESP8266
+// Only compile encoder support for ESP32, not ESP8266 or CH32V003
+#if !defined(ESP8266) && !defined(CH32V003)
 
 #include "encoder.h"
 #include <Arduino.h>
@@ -127,4 +127,4 @@ void IRAM_ATTR Encoder::readEncoderISR() {
 	}
 }
 
-#endif // !ESP8266
+#endif // !ESP8266 && !CH32V003

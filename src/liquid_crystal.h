@@ -1,6 +1,8 @@
 #ifndef LIQUID_CRYSTAL_H
 #define LIQUID_CRYSTAL_H
 
+#ifndef CH32V003
+
 #include "Peripheral.h"
 #include <LiquidCrystal_I2C.h>
 
@@ -65,5 +67,7 @@ private:
 	LiquidCrystal_I2C _lcd; // The underlying library object
 	bool _backlight_on;
 };
+
+#endif
 
 #endif // LIQUID_CRYSTAL_H
