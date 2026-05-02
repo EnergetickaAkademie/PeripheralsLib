@@ -16,6 +16,7 @@
 #include "buzzer.h"
 #include "shift_register_chain.h"
 #include "segment_display.h"
+#include "segment_display_pair.h"
 #include "bargraph.h"
 
 #ifndef CH32V003
@@ -70,11 +71,12 @@ public:
 	// --- Factory Methods for Shift Register Devices ---
 	Bargraph* createBargraph(ShiftRegisterChain* chain, uint8_t numLeds = 16);
 	SegmentDisplay* createSegmentDisplay(ShiftRegisterChain* chain, uint8_t numDigits = 4);
+	SegmentDisplayPair createSegmentDisplayPair(ShiftRegisterChain* chain, uint8_t numDigits = 8);
 
 	InputShiftRegisterChain* createInputShiftRegisterChain(uint8_t load_pin, uint8_t data_pin, uint8_t clock_pin, uint8_t num_registers);
 	ShiftEncoder* createShiftEncoder(InputShiftRegisterChain* chain, uint8_t register_index, uint8_t bit_position, 
 									int32_t min_value = 0, int32_t max_value = 100, int32_t step = 1);
-	ShiftButton* PeripheralFactory::createShiftButton(InputShiftRegisterChain* chain, uint8_t register_index, uint8_t bit_position, bool active_high);
+	ShiftButton* createShiftButton(InputShiftRegisterChain* chain, uint8_t register_index, uint8_t bit_position, bool active_high = true);
 	/**
 	 * @brief Calls the update() method on all registered peripherals.
 	 */

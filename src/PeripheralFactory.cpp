@@ -122,6 +122,17 @@ SegmentDisplay* PeripheralFactory::createSegmentDisplay(ShiftRegisterChain* chai
 	return display;
 }
 
+SegmentDisplayPair PeripheralFactory::createSegmentDisplayPair(ShiftRegisterChain* chain, uint8_t numDigits) {
+	SegmentDisplayPair pair;
+	if (!chain) {
+		return pair;
+	}
+
+	SegmentDisplay* display = createSegmentDisplay(chain, numDigits);
+	pair.attach(display);
+	return pair;
+}
+
 void PeripheralFactory::update() {
 	for (auto& peripheral : _peripherals) {
 		if (peripheral) {
