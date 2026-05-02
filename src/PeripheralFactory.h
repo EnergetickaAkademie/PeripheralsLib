@@ -30,6 +30,7 @@
 #include "atomizer.h"
 #include "input_shift_register_chain.h"
 #include "shift_encoder.h"
+#include "shift_button.h"
 
 /**
  * @brief Manages and creates hardware peripherals.
@@ -73,6 +74,7 @@ public:
 	InputShiftRegisterChain* createInputShiftRegisterChain(uint8_t load_pin, uint8_t data_pin, uint8_t clock_pin, uint8_t num_registers);
 	ShiftEncoder* createShiftEncoder(InputShiftRegisterChain* chain, uint8_t register_index, uint8_t bit_position, 
 									int32_t min_value = 0, int32_t max_value = 100, int32_t step = 1);
+	ShiftButton* PeripheralFactory::createShiftButton(InputShiftRegisterChain* chain, uint8_t register_index, uint8_t bit_position, bool active_high);
 	/**
 	 * @brief Calls the update() method on all registered peripherals.
 	 */

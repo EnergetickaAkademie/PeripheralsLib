@@ -144,3 +144,11 @@ ShiftEncoder* PeripheralFactory::createShiftEncoder(InputShiftRegisterChain* cha
 	chain->add_device(encoder);
 	return encoder;
 }
+
+ShiftButton* PeripheralFactory::createShiftButton(InputShiftRegisterChain* chain, uint8_t register_index, uint8_t bit_position, bool active_high) {
+	if (!chain) return nullptr;
+
+	ShiftButton* button = new ShiftButton(register_index, bit_position, active_high);
+	chain->add_device(button);
+	return button;
+}
