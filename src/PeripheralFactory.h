@@ -24,6 +24,10 @@
 	#include "rgbled.h"
 #endif
 
+#ifdef CH32V003
+	#include "simplergb.h"
+#endif
+
 #include "button.h"
 #include "ledbutton.h"
 #include "periodic.h"
@@ -73,6 +77,10 @@ public:
 	InputShiftRegisterChain* createInputShiftRegisterChain(uint8_t load_pin, uint8_t data_pin, uint8_t clock_pin, uint8_t num_registers);
 	ShiftEncoder* createShiftEncoder(InputShiftRegisterChain* chain, uint8_t register_index, uint8_t bit_position, 
 									int32_t min_value = 0, int32_t max_value = 100, int32_t step = 1);
+
+	#ifdef CH32V003
+		SimpleRGB* createSimpleRGB(uint8_t pin, uint16_t numPixels = 1);
+	#endif
 	/**
 	 * @brief Calls the update() method on all registered peripherals.
 	 */

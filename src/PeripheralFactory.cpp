@@ -144,3 +144,11 @@ ShiftEncoder* PeripheralFactory::createShiftEncoder(InputShiftRegisterChain* cha
 	chain->add_device(encoder);
 	return encoder;
 }
+
+#ifdef CH32V003
+	SimpleRGB* PeripheralFactory::createSimpleRGB(uint8_t pin, uint16_t numPixels) {
+		SimpleRGB* rgb = new SimpleRGB(pin, numPixels);
+		add(rgb);
+		return rgb;
+	}
+#endif
