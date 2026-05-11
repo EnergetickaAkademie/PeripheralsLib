@@ -122,6 +122,17 @@ SegmentDisplay* PeripheralFactory::createSegmentDisplay(ShiftRegisterChain* chai
 	return display;
 }
 
+SegmentDisplayPair PeripheralFactory::createSegmentDisplayPair(ShiftRegisterChain* chain, uint8_t numDigits) {
+	SegmentDisplayPair pair;
+	if (!chain) {
+		return pair;
+	}
+
+	SegmentDisplay* display = createSegmentDisplay(chain, numDigits);
+	pair.attach(display);
+	return pair;
+}
+
 void PeripheralFactory::update() {
 	for (auto& peripheral : _peripherals) {
 		if (peripheral) {
@@ -152,3 +163,11 @@ ShiftEncoder* PeripheralFactory::createShiftEncoder(InputShiftRegisterChain* cha
 		return rgb;
 	}
 #endif
+
+ShiftButton* PeripheralFactory::createShiftButton(InputShiftRegisterChain* chain, uint8_t register_index, uint8_t bit_position, bool active_high) {
+	if (!chain) return nullptr;
+
+	ShiftButton* button = new ShiftButton(register_index, bit_position, active_high);
+	chain->add_device(button);
+	return button;
+}
