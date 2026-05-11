@@ -30,7 +30,7 @@ static inline void ws2812_send_byte(uint8_t byte, volatile uint32_t *bshr, uint3
 	}
 }
 
-SimpleRGB::SimpleRGB(uint8_t pin, uint16_t numPixels) : _pin(pin), _r(0), _g(0), _b(0), _colorChanged(true) {
+SimpleRGB::SimpleRGB(uint8_t pin) : _pin(pin), _r(0), _g(0), _b(0), _colorChanged(true) {
 	pinMode(_pin, OUTPUT);
 	
 	GPIO_TypeDef *port = (GPIO_TypeDef *)digitalPinToPort(_pin);
