@@ -82,9 +82,9 @@ public:
 									int32_t min_value = 0, int32_t max_value = 100, int32_t step = 1);
 
 	#ifdef CH32V003
-		SimpleRGB* createSimpleRGB(uint8_t pin, uint16_t numPixels = 1);
+		SimpleRGB* createSimpleRGB(uint8_t pin);
 	#endif
-	
+
 	ShiftButton* createShiftButton(InputShiftRegisterChain* chain, uint8_t register_index, uint8_t bit_position, bool active_high = true);
 	/**
 	 * @brief Calls the update() method on all registered peripherals.
