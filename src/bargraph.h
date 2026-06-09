@@ -3,6 +3,11 @@
 
 #include "shift_register_device.h"
 
+enum class BargraphMode {
+	NORMAL,
+	CENTER
+};
+
 /**
  * @brief A flexible bargraph device controlled by one or more shift registers.
  */
@@ -20,10 +25,24 @@ public:
 	~Bargraph();
 
 	/**
-	 * @brief Sets the number of LEDs to light up.
-	 * @param value The number of LEDs to turn on, from 0 to numLeds.
+	 * @brief Sets the operating mode of the bargraph.
+	 * @param mode The display mode (NORMAL or CENTER).
 	 */
-	void setValue(uint8_t value);
+	void setMode(BargraphMode mode);
+
+	/**
+	 * @brief Sets the value range for the bargraph.
+	 * Useful for mapping values in NORMAL or CENTER modes.
+	 * @param minVal The minimum expected value.
+	 * @param maxVal The maximum expected value.
+	 */
+	void setRange(int minVal, int maxVal);
+
+	/**
+	 * @brief Sets the value to display on the bargraph.
+	 * @param value The value to display.
+	 */
+	void setValue(int value);
 
 	/**
 	 * @brief Sets the display direction of the bargraph.
@@ -57,9 +76,13 @@ public:
 private:
 	uint8_t _numLeds;
 	uint8_t _registerCount;
-	byte* _shiftData; // A raw pointer to a dynamically allocated array
-	bool _reversed; // Flag to control display direction
-	bool _enabled;  // Controls whether the bargraph is on or off
+	byte* _shiftData;
+	bool _reversed;
+	bool _enabled;
+
+	BargraphMode _mode;
+	int _minVal;
+	int _maxVal;
 };
 
 #endif // BARGRAPH_H
