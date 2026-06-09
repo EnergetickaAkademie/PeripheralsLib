@@ -58,18 +58,24 @@ void Bargraph::setValue(int value) {
 		int left_center = (_numLeds - 1) / 2;
 		int right_center = _numLeds / 2;
 
-		start_led = left_center;
-		end_led = right_center;
-
-		if (value > 0) {
+		if (value == 0) {
+			start_led = left_center;
+			end_led = right_center;
+		}
+		else if (value > 0) {
+			start_led = right_center;
 			if (value >= _maxVal) {
 				end_led = _numLeds - 1;
 			} else if (_maxVal > 0) {
 				int steps_right = _numLeds - 1 - right_center;
 				int extra_leds = (value * steps_right + _maxVal - 1) / _maxVal; // ceil division
 				end_led = right_center + extra_leds;
+			} else {
+				end_led = right_center;
 			}
-		} else if (value < 0) {
+		}
+		else if (value < 0) {
+			end_led = left_center;
 			if (value <= _minVal) {
 				start_led = 0;
 			} else if (_minVal < 0) {
@@ -78,6 +84,8 @@ void Bargraph::setValue(int value) {
 				int abs_min = -_minVal;
 				int extra_leds = (abs_val * steps_left + abs_min - 1) / abs_min; // ceil division
 				start_led = left_center - extra_leds;
+			} else {
+				start_led = left_center;
 			}
 		}
 	}
