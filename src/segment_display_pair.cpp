@@ -45,11 +45,13 @@ void SegmentDisplayPair::clearHalf(bool isLeft) {
 }
 
 void SegmentDisplayPair::setHalf(bool isLeft, int32_t value, uint8_t decimals) {
+    // Changed lower bounds from 0 to -999 to allow negative numbers.
+    // The minus sign takes up 1 digit, leaving 3 digits for the number.
     if (isLeft) {
-        _leftValue = constrain(value, 0, 9999);
+        _leftValue = constrain(value, -999, 9999);
         _leftActive = true;
     } else {
-        _rightValue = constrain(value, 0, 9999);
+        _rightValue = constrain(value, -999, 9999);
         _rightActive = true;
     }
     render();
@@ -66,6 +68,8 @@ void SegmentDisplayPair::render() {
     char rightStr[5] = "    ";
 
     if (_leftActive) {
+        // Note: %04ld with a negative number like -5 will format as "-005".
+        // If you prefer space padding (e.g., "  -5"), change "%04ld" to "%4ld".
         snprintf(leftStr, sizeof(leftStr), "%04ld", static_cast<long>(_leftValue));
     }
     if (_rightActive) {
