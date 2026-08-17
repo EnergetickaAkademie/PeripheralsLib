@@ -5,7 +5,7 @@ ShiftEncoder::ShiftEncoder(uint8_t register_index, uint8_t bit_position,
                            int32_t min_value, int32_t max_value, int32_t step)
     : _register_index(register_index), _bit_position(bit_position),
       _min_value(min_value), _max_value(max_value), _step(step),
-      _current_value(min_value), _previous_state(0) {
+      _current_value(min_value), _previous_state(0), _initialized(false) {
 }
 
 void ShiftEncoder::update(const uint8_t* current_state, const uint8_t* previous_state, uint8_t num_registers) {
@@ -14,25 +14,28 @@ void ShiftEncoder::update(const uint8_t* current_state, const uint8_t* previous_
     }
     
     uint8_t current_encoder_state = get_encoder_state(current_state);
+
+    // Establish the electrical resting state without reporting a false step.
+    if (!_initialized) {
+        _previous_state = current_encoder_state;
+        _initialized = true;
+        return;
+    }
+
     uint8_t previous_encoder_state = _previous_state;
-    
-    // Only process if encoder state has changed
+
+    // Count only the rising edge of channel A. A complete mechanical detent
+    // produces both a rising and a falling edge, so counting both doubles it.
     if (current_encoder_state != previous_encoder_state) {
-        // Extract individual bits
         bool currA = (current_encoder_state >> 1) & 0x01;
         bool currB = current_encoder_state & 0x01;
         bool prevA = (previous_encoder_state >> 1) & 0x01;
 
-        // Detect rotation (same logic as your original code)
-        if (currA != prevA) {
-            if (currA != currB) {
-                handle_rotation(1); // Clockwise
-            } else {
-                handle_rotation(-1); // Counter-clockwise
-            }
+        if (!prevA && currA) {
+            handle_rotation(currA != currB ? 1 : -1);
         }
     }
-    
+
     _previous_state = current_encoder_state;
 }
 

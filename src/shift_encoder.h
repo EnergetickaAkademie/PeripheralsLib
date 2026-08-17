@@ -33,6 +33,7 @@ private:
     int32_t _step;
     int32_t _current_value;
     uint8_t _previous_state;
+    bool _initialized;
     ValueCallback _callback;
     
     uint8_t get_encoder_state(const uint8_t* chain_state);
